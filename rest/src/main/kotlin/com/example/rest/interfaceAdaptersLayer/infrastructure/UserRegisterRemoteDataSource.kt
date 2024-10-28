@@ -1,5 +1,6 @@
 package com.example.rest.interfaceAdaptersLayer.infrastructure
 
+import com.example.rest.businessLayer.adapter.login.LoginRequestModel
 import com.example.rest.businessLayer.adapter.login.LoginResponseModel
 import com.example.rest.businessLayer.adapter.token.TokenResponseModel
 import com.example.rest.businessLayer.adapter.user.UserRequestModel
@@ -11,6 +12,7 @@ import com.example.rest.interfaceAdaptersLayer.infrastructure.dto.createUser.Use
 import com.example.rest.interfaceAdaptersLayer.infrastructure.dto.createUser.toDto
 import com.example.rest.interfaceAdaptersLayer.infrastructure.dto.createUser.toModel
 import com.example.rest.interfaceAdaptersLayer.infrastructure.dto.login.LoginResponseDto
+import com.example.rest.interfaceAdaptersLayer.infrastructure.dto.login.toDto
 import com.example.rest.interfaceAdaptersLayer.infrastructure.dto.login.toModel
 import com.example.rest.interfaceAdaptersLayer.infrastructure.dto.token.TokenResponseDto
 import org.springframework.http.HttpStatus
@@ -27,16 +29,13 @@ class UserRegisterRemoteDataSource(
             .baseUrl(host)
             .build()
 
-    override fun login(
-        name: String,
-        password: String,
-    ): Result<LoginResponseModel> {
+    override fun login(requestModel: LoginRequestModel): Result<LoginResponseModel> {
         try {
             val user =
                 restClient
                     .post()
                     .uri("/login_user")
-                    .body(mapOf("username" to name, "password" to password))
+                    .body(requestModel.toDto())
                     .accept(APPLICATION_JSON)
                     .retrieve()
                     .onStatus({ it.isSameCodeAs(HttpStatus.UNAUTHORIZED) }) { _, _ ->
