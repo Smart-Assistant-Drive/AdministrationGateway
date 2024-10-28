@@ -1,7 +1,6 @@
 package com.example.rest.interfaceAdaptersLayer.controllers.dto.token
 
 import com.example.rest.businessLayer.adapter.token.TokenResponseModel
-import com.example.rest.interfaceAdaptersLayer.infrastructure.dto.token.TokenResponseDto
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.springframework.hateoas.Link

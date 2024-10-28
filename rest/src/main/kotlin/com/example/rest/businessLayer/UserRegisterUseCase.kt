@@ -24,8 +24,7 @@ class UserRegisterUseCase(
         return userDataSourceGateway.createUser(requestModel)
     }
 
-    override fun login(requestModel: LoginRequestModel): Result<LoginResponseModel> =
-        userDataSourceGateway.login(requestModel.username, requestModel.password)
+    override fun login(requestModel: LoginRequestModel): Result<LoginResponseModel> = userDataSourceGateway.login(requestModel)
 
     override fun checkUserToken(token: String): Result<TokenResponseModel> = userDataSourceGateway.getUserFromToken(token)
 }

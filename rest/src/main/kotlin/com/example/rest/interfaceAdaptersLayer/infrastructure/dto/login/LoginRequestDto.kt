@@ -1,7 +1,6 @@
 package com.example.rest.interfaceAdaptersLayer.infrastructure.dto.login
 
 import com.example.rest.businessLayer.adapter.login.LoginRequestModel
-import com.example.rest.interfaceAdaptersLayer.controllers.dto.login.LoginRequestDto
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 
@@ -14,4 +13,4 @@ class LoginRequestDto
         val password: String,
     )
 
-fun LoginRequestDto.toModel() = LoginRequestModel(username, password)
+fun LoginRequestModel.toDto() = LoginRequestDto(username, password)
