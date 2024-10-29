@@ -3,13 +3,10 @@ package com.example.rest.interfaceAdaptersLayer.controllers
 import com.example.rest.businessLayer.adapter.user.UserRequestModel
 import com.example.rest.businessLayer.adapter.user.UserRequestingModel
 import com.example.rest.businessLayer.boundaries.UserInputBoundary
-import com.example.rest.businessLayer.exception.InvalidTokenException
+import com.example.rest.businessLayer.exception.ErrorInUserCreationException
 import com.example.rest.businessLayer.exception.MissingUserPrivilegeException
-import com.example.rest.businessLayer.exception.PasswordToShortException
-import com.example.rest.businessLayer.exception.TokenExpiredException
+import com.example.rest.businessLayer.exception.UnauthorizedAccessException
 import com.example.rest.businessLayer.exception.UserAlreadyPresentException
-import com.example.rest.businessLayer.exception.UserNotFound
-import com.example.rest.businessLayer.exception.WrongPasswordException
 import com.example.rest.domainLayer.Role
 import com.example.rest.interfaceAdaptersLayer.controllers.dto.createUser.UserRequestDto
 import com.example.rest.interfaceAdaptersLayer.controllers.dto.createUser.UserResponseDto
@@ -134,7 +131,7 @@ class AccessController(
                         .status(HttpStatus.CONFLICT)
                         .body(exception.message)
 
-                is PasswordToShortException -> ResponseEntity.badRequest().body(exception.message)
+                is ErrorInUserCreationException -> ResponseEntity.badRequest().body(exception.message)
                 is MissingUserPrivilegeException ->
                     ResponseEntity
                         .status(HttpStatus.UNAUTHORIZED)
@@ -215,7 +212,7 @@ class AccessController(
             )
         } else {
             when (val exception = result.exceptionOrNull()) {
-                is WrongPasswordException, is UserNotFound ->
+                is UnauthorizedAccessException ->
                     ResponseEntity
                         .status(HttpStatus.UNAUTHORIZED)
                         .body(exception.message)
@@ -275,7 +272,7 @@ class AccessController(
             ResponseEntity(result.getOrNull()!!.toDto(links), HttpStatus.OK)
         } else {
             when (val exception = result.exceptionOrNull()) {
-                is TokenExpiredException, is UserNotFound, is InvalidTokenException -> {
+                is UnauthorizedAccessException -> {
                     val links =
                         listOf(
                             linkTo(
@@ -284,7 +281,7 @@ class AccessController(
                                     .login(LoginRequestDto("username", "password")),
                             ).withRel("login"),
                         )
-                    ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(TokenErrorDto(exception.message!!).add(links))
+                    ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(TokenErrorDto(exception.message).add(links))
                 }
 
                 else -> ResponseEntity.internalServerError().build()
