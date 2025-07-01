@@ -23,7 +23,7 @@ buildscript {
 }
 
 allprojects {
-    apply(plugin = "org.danilopianini.gradle-kotlin-qa")
+    // apply(plugin = "org.danilopianini.gradle-kotlin-qa")
 }
 
 repositories {
@@ -36,8 +36,4 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
-}
-
-kotlin {
-    jvmToolchain(21)
 }
