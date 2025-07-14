@@ -6,7 +6,7 @@ import com.example.rest.businessLayer.adapter.road.DrivingFlowUpdateModel
 import com.example.rest.businessLayer.adapter.road.RoadModel
 import com.example.rest.businessLayer.adapter.road.RoadResponseModel
 
-interface RoadDataSourceGateway {
+interface RoadInputBoundary {
 	fun addRoad(roadModel: RoadModel): Result<RoadResponseModel>
 
 	fun getRoad(roadId: String): Result<RoadModel>
