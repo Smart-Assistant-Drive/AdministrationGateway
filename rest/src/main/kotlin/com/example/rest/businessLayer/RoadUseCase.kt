@@ -1,10 +1,13 @@
 package com.example.rest.businessLayer
 
-import com.example.rest.businessLayer.adapter.road.DrivingFlowModel
-import com.example.rest.businessLayer.adapter.road.DrivingFlowResponseModel
-import com.example.rest.businessLayer.adapter.road.DrivingFlowUpdateModel
+import com.example.rest.businessLayer.adapter.road.drivingFlow.DrivingFlowModel
+import com.example.rest.businessLayer.adapter.road.drivingFlow.DrivingFlowResponseModel
+import com.example.rest.businessLayer.adapter.road.drivingFlow.DrivingFlowUpdateModel
 import com.example.rest.businessLayer.adapter.road.RoadModel
 import com.example.rest.businessLayer.adapter.road.RoadResponseModel
+import com.example.rest.businessLayer.adapter.road.junction.JunctionModel
+import com.example.rest.businessLayer.adapter.road.junction.JunctionResponseModel
+import com.example.rest.businessLayer.adapter.road.junction.JunctionUpdateModel
 import com.example.rest.businessLayer.boundaries.RoadDataSourceGateway
 import com.example.rest.businessLayer.boundaries.RoadInputBoundary
 
@@ -24,15 +27,34 @@ class RoadUseCase(
 	}
 
 	override fun addDirectionFlow(drivingFlowModel: DrivingFlowModel): Result<DrivingFlowResponseModel> {
-		TODO("Not yet implemented")
+		return roadDataSourceGateway.addDirectionFlow(drivingFlowModel)
 	}
 
 	override fun getAllDirectionFlows(roadId: String): Result<List<DrivingFlowResponseModel>> {
-		TODO("Not yet implemented")
+		return roadDataSourceGateway.getAllDirectionFlows(roadId)
 	}
 
 	override fun changeDrivingFlow(drivingFlowUpdateModel: DrivingFlowUpdateModel): Result<DrivingFlowResponseModel> {
-		TODO("Not yet implemented")
+		return roadDataSourceGateway.changeDrivingFlow(drivingFlowUpdateModel)
+	}
+
+	override fun addJunction(junctionModel: JunctionModel): Result<JunctionResponseModel> {
+		return roadDataSourceGateway.addJunction(junctionModel)
+	}
+
+	override fun getJunctionsByRoad(roadId: String): List<JunctionResponseModel> {
+		return roadDataSourceGateway.getJunctionsByRoad(roadId).getOrElse { ArrayList() }
+	}
+
+	override fun getJunction(id: String): Result<JunctionResponseModel> {
+		return roadDataSourceGateway.getJunction(id)
+	}
+
+	override fun updateJunction(
+		junctionId: String,
+		junctionUpdateModel: JunctionUpdateModel
+	): Result<JunctionResponseModel> {
+		return roadDataSourceGateway.updateJunction(junctionId, junctionUpdateModel)
 	}
 
 }

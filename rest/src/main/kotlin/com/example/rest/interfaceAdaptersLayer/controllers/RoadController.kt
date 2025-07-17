@@ -1,6 +1,9 @@
 package com.example.rest.interfaceAdaptersLayer.controllers
 
+import com.example.rest.businessLayer.adapter.road.drivingFlow.DrivingFlowUpdateModel
 import com.example.rest.businessLayer.boundaries.RoadInputBoundary
+import com.example.rest.interfaceAdaptersLayer.controllers.dto.road.DrivingFlowRequestDto
+import com.example.rest.interfaceAdaptersLayer.controllers.dto.road.DrivingFlowResponseDto
 import com.example.rest.interfaceAdaptersLayer.controllers.dto.road.RoadRequestDto
 import com.example.rest.interfaceAdaptersLayer.controllers.dto.road.toDto
 import com.example.rest.interfaceAdaptersLayer.controllers.dto.road.toModel
@@ -174,6 +177,164 @@ class RoadController(
 				listOf(
 					WebMvcLinkBuilder.linkTo(
 						WebMvcLinkBuilder.methodOn(RoadController::class.java).addRoad(roadUpdateModel)
+					)
+						.withSelfRel(),
+				)
+			ResponseEntity(result.getOrNull()!!.toDto(links), HttpStatus.CREATED)
+		} else {
+			when (val exception = result.exceptionOrNull()) {
+				else -> ResponseEntity.internalServerError().build()
+			}
+		}
+	}
+
+	@PostMapping("/flows")
+	@Operation(
+		summary = "Add new driving flow",
+		description = "Add new driving flow",
+		requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
+			content = [
+				Content(
+					mediaType = "application/json",
+					schema = Schema(implementation = DrivingFlowRequestDto::class)
+				)
+			],
+			required = true
+		),
+		responses = [
+			ApiResponse(
+				responseCode = "201",
+				description = "Flow created successfully",
+				content = [Content(mediaType = "application/json", schema = Schema(implementation = DrivingFlowRequestDto::class))],
+			),
+			ApiResponse(
+				responseCode = "400",
+				description = "Bad request",
+				content = [Content(mediaType = "application/json")],
+			),
+			ApiResponse(
+				responseCode = "409",
+				description = "Conflict",
+				content = [Content(mediaType = "application/json")],
+			),
+		],
+	)
+	fun addDrivingFlow(
+		@RequestBody requestModel: DrivingFlowRequestDto,
+	): HttpEntity<Any> {
+		val result = roadInputBoundary.addDirectionFlow(requestModel.toModel())
+		return if (result.isSuccess) {
+			val links =
+				listOf(
+					WebMvcLinkBuilder.linkTo(
+						WebMvcLinkBuilder.methodOn(RoadController::class.java).addDrivingFlow(requestModel)
+					)
+						.withSelfRel(),
+				)
+			ResponseEntity(result.getOrNull()!!.toDto(links), HttpStatus.CREATED)
+		} else {
+			when (val exception = result.exceptionOrNull()) {
+				else -> ResponseEntity.internalServerError().build()
+			}
+		}
+	}
+
+	@GetMapping("/flows/{id}")
+	@Operation(
+		summary = "Get all direction flows within an existing road",
+		description = "Get existing flows of a road with a specific id",
+		parameters = [
+			Parameter(
+				name = "id",
+				description = "Road id",
+				`in` = ParameterIn.PATH
+			)
+		],
+		responses = [
+			ApiResponse(
+				responseCode = "200",
+				description = "Flows obtained successfully",
+				content = [
+					Content(
+						mediaType = "application/json",
+						array = ArraySchema(items = Schema(implementation = DrivingFlowResponseDto::class))
+					)
+				]
+			),
+			ApiResponse(
+				responseCode = "400",
+				description = "Invalid road flow",
+				content = [Content()]
+			),
+			ApiResponse(
+				responseCode = "404",
+				description = "Valid road flow not found",
+				content = [Content()]
+			),
+			ApiResponse(
+				responseCode = "500",
+				description = "Internal server error for road flow search",
+				content = [Content()]
+			)
+		]
+	)
+	fun getFlows(@PathVariable id: String): HttpEntity<Any> {
+		val result = roadInputBoundary.getAllDirectionFlows(id)
+		return if (result.isSuccess) {
+			ResponseEntity(result.getOrNull()!!, HttpStatus.OK)
+		} else {
+			ResponseEntity.internalServerError().build()
+		}
+	}
+
+	@PutMapping("/flows")
+	@Operation(
+		summary = "Change existing driving flow",
+		description = "Change existing driving flow with a specific id",
+		requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
+			content = [
+				Content(
+					mediaType = "application/json",
+					schema = Schema(implementation = DrivingFlowUpdateModel::class)
+				)
+			],
+			required = true
+		),
+		responses = [
+			ApiResponse(
+				responseCode = "200",
+				description = "Driving flow changed successfully",
+				content = [
+					Content(
+						mediaType = "application/json",
+						schema = Schema(implementation = DrivingFlowResponseDto::class)
+					)
+				]
+			),
+			ApiResponse(
+				responseCode = "400",
+				description = "Invalid road, cannot update a non-existing driving flow",
+				content = [Content()]
+			),
+			ApiResponse(
+				responseCode = "404",
+				description = "Valid driving flow not found",
+				content = [Content()]
+			),
+			ApiResponse(
+				responseCode = "500",
+				description = "Internal server error",
+				content = [Content()]
+			)
+		]
+	)
+	fun updateDrivingFlow(@RequestBody flowUpdateModel: DrivingFlowUpdateModel): HttpEntity<Any> {
+		val result = roadInputBoundary.changeDrivingFlow(flowUpdateModel)
+		return if (result.isSuccess) {
+			val links =
+				listOf(
+					WebMvcLinkBuilder.linkTo(
+						WebMvcLinkBuilder.methodOn(RoadController::class.java).updateDrivingFlow(flowUpdateModel)
 					)
 						.withSelfRel(),
 				)
