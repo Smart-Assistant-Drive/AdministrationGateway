@@ -1,6 +1,6 @@
 package com.example.rest.interfaceAdaptersLayer.infrastructure.dto.road
 
-import com.example.rest.businessLayer.adapter.road.DrivingFlowModel
+import com.example.rest.businessLayer.adapter.road.drivingFlow.DrivingFlowModel
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.springframework.hateoas.Link
@@ -23,5 +23,14 @@ fun DrivingFlowModel.toDto(link: Link): DrivingFlowRequestDto {
 		roadCoordinates
 	).add(
 		link
+	)
+}
+
+fun DrivingFlowRequestDto.toModel(): DrivingFlowModel {
+	return DrivingFlowModel(
+		roadId,
+		direction,
+		numOfLanes,
+		coordinates
 	)
 }

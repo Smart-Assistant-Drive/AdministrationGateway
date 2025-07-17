@@ -1,4 +1,4 @@
-package com.example.rest.businessLayer.adapter.road
+package com.example.rest.businessLayer.adapter.road.drivingFlow
 
 data class DrivingFlowResponseModel(
 	val roadId: String,

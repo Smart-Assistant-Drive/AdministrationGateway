@@ -1,4 +1,4 @@
-package com.example.rest.interfaceAdaptersLayer.infrastructure.dto.road
+package com.example.rest.interfaceAdaptersLayer.controllers.dto.road
 
 import com.example.rest.businessLayer.adapter.road.drivingFlow.DrivingFlowResponseModel
 import com.fasterxml.jackson.annotation.JsonCreator
