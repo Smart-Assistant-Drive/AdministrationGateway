@@ -17,7 +17,7 @@ data class RoadResponseDto
 		@param:JsonProperty("roadName")
 		val roadName: String,
 		@param:JsonProperty("category")
-		val category: Int
+		val category: String
 	) : RepresentationModel<RoadResponseDto>()
 
 fun RoadResponseModel.toDto(links: List<Link>): RoadResponseDto =
@@ -25,5 +25,5 @@ fun RoadResponseModel.toDto(links: List<Link>): RoadResponseDto =
 		this.roadId,
 		this.roadNumber,
 		this.roadName,
-		this.category
+		this.category.toString()
 	).add(links)

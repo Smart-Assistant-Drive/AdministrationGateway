@@ -15,6 +15,7 @@ import com.example.rest.interfaceAdaptersLayer.infrastructure.dto.road.JunctionR
 import com.example.rest.interfaceAdaptersLayer.infrastructure.dto.road.JunctionResponseDto
 import com.example.rest.interfaceAdaptersLayer.infrastructure.dto.road.RoadRequestDto
 import com.example.rest.interfaceAdaptersLayer.infrastructure.dto.road.RoadResponseDto
+import java.lang.Integer.parseInt
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.MediaType
 import org.springframework.web.client.RestClient
@@ -33,13 +34,15 @@ class RoadRemoteDataSource(url: String): RoadDataSourceGateway {
 				restClient
 					.post()
 					.uri("/road")
-					.accept(MediaType.APPLICATION_JSON)
-					.body(roadModel)
+					.contentType(MediaType.APPLICATION_JSON)
+					.body(roadModel.toDto())
 					.retrieve()
 					.toEntity(object : ParameterizedTypeReference<RoadResponseDto>() {})
 					.body!!
+			//Result.success(RoadResponseModel("","","",0)/*response.toResponseModel()*/)
 			Result.success(response.toResponseModel())
 		} catch (e: Exception) {
+			println("ERRORE: $e")
 			Result.failure(e)
 		}
 
@@ -48,7 +51,7 @@ class RoadRemoteDataSource(url: String): RoadDataSourceGateway {
 			val response =
 				restClient
 					.get()
-					.uri("/road/{$roadId}")
+					.uri("/road/{roadId}", roadId)
 					.accept(MediaType.APPLICATION_JSON)
 					.retrieve()
 					.toEntity(object : ParameterizedTypeReference<RoadResponseDto>() {})
@@ -63,7 +66,7 @@ class RoadRemoteDataSource(url: String): RoadDataSourceGateway {
 			val response =
 				restClient
 					.put()
-					.uri("/road/{${roadId}}")
+					.uri("/road/{roadId}", roadId)
 					.body(roadModel.toDto())
 					.accept(MediaType.APPLICATION_JSON)
 					.retrieve()
@@ -95,7 +98,7 @@ class RoadRemoteDataSource(url: String): RoadDataSourceGateway {
 			val response =
 				restClient
 					.get()
-					.uri("/flows/{$roadId}")
+					.uri("/flows/{roadId}", roadId)
 					.accept(MediaType.APPLICATION_JSON)
 					.retrieve()
 					.toEntity(object : ParameterizedTypeReference<List<DrivingFlowResponseDto>>() {})
@@ -142,7 +145,7 @@ class RoadRemoteDataSource(url: String): RoadDataSourceGateway {
 			val response =
 				restClient
 					.get()
-					.uri("/junction/road/{$roadId}")
+					.uri("/junction/road/{roadId}", roadId)
 					.accept(MediaType.APPLICATION_JSON)
 					.retrieve()
 					.toEntity(object : ParameterizedTypeReference<List<JunctionResponseDto>>() {})
@@ -157,7 +160,7 @@ class RoadRemoteDataSource(url: String): RoadDataSourceGateway {
 			val response =
 				restClient
 					.get()
-					.uri("/junction/{$id}")
+					.uri("/junction/{id}", id)
 					.accept(MediaType.APPLICATION_JSON)
 					.retrieve()
 					.toEntity(object : ParameterizedTypeReference<JunctionResponseDto>() {})
@@ -175,7 +178,7 @@ class RoadRemoteDataSource(url: String): RoadDataSourceGateway {
 			val response =
 				restClient
 					.put()
-					.uri("/junction/$junctionId")
+					.uri("/junction/{junctionId}", junctionId)
 					.body(junctionUpdateModel.toDto())
 					.accept(MediaType.APPLICATION_JSON)
 					.retrieve()
@@ -191,14 +194,14 @@ class RoadRemoteDataSource(url: String): RoadDataSourceGateway {
 			this.roadId,
 			this.roadNumber,
 			this.roadName,
-			this.category
+			parseInt(this.category)
 		)
 
 	private fun RoadResponseDto.toModel(): RoadModel =
 		RoadModel(
 			this.roadNumber,
 			this.roadName,
-			this.category
+			parseInt(this.category)
 		)
 
 	private fun RoadModel.toDto(): RoadRequestDto =

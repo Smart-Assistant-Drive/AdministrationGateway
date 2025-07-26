@@ -116,6 +116,7 @@ class RoadController(
 				)
 			ResponseEntity(result.getOrNull()!!.toDto(links), HttpStatus.CREATED)
 		} else {
+			println(result.exceptionOrNull())
 			when (val exception = result.exceptionOrNull()) {
 				else -> ResponseEntity.internalServerError().build()
 			}
