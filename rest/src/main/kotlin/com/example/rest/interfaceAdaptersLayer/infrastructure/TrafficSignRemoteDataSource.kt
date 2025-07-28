@@ -3,6 +3,7 @@ package com.example.rest.interfaceAdaptersLayer.infrastructure
 import com.example.rest.businessLayer.adapter.sign.SignModel
 import com.example.rest.businessLayer.boundaries.SignsDataSourceGateway
 import com.example.rest.interfaceAdaptersLayer.infrastructure.dto.createSign.SignResponseDto
+import com.example.rest.interfaceAdaptersLayer.infrastructure.dto.createSign.toDto
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.web.client.RestClient
@@ -35,8 +36,10 @@ class TrafficSignRemoteDataSource(
         try {
             val response =
                 restClient
-                    .get()
+                    .post()
                     .uri("/create_sign")
+                    .contentType(APPLICATION_JSON)
+                    .body(requestModel.toDto(listOf()))
                     .accept(APPLICATION_JSON)
                     .retrieve()
                     .toEntity(object : ParameterizedTypeReference<SignResponseDto>() {})
