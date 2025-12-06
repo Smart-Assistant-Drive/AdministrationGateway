@@ -1,0 +1,37 @@
+package com.example.rest.interfaceAdaptersLayer.infrastructure.dto.semaphore
+
+import com.example.rest.businessLayer.adapter.semaphore.NewSemaphoreRequestModel
+import com.example.rest.businessLayer.adapter.semaphore.Position
+import com.example.rest.businessLayer.adapter.semaphore.SemaphoreResponseModel
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
+import io.micrometer.core.instrument.binder.http.HttpJakartaServletRequestTags.status
+import org.springframework.hateoas.RepresentationModel
+
+data class SemaphoreDto
+	@JsonCreator
+	constructor(
+        @param:JsonProperty("link") val link: String,
+        @param:JsonProperty("status") val status: String,
+        @param:JsonProperty("road") val road: String,
+        @param:JsonProperty("direction") val direction: Int,
+        @param:JsonProperty("position") val position: Position,
+	) : RepresentationModel<SemaphoreDto>()
+
+fun SemaphoreDto.toModel(): SemaphoreResponseModel =
+	SemaphoreResponseModel(
+		link,
+		status,
+		road,
+		direction,
+		Pair(position.x, position.y)
+	)
+
+fun NewSemaphoreRequestModel.toDto(): SemaphoreDto =
+    SemaphoreDto(
+        link,
+        "na",
+        road,
+        direction,
+        position
+    )
