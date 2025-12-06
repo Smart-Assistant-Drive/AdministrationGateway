@@ -1,13 +1,19 @@
 package com.example.rest.interfaceAdaptersLayer.infrastructure
 
+import com.example.rest.businessLayer.adapter.road.NewTrafficDigitalTwinRequest
 import com.example.rest.businessLayer.adapter.road.drivingFlow.DrivingFlowModel
 import com.example.rest.businessLayer.adapter.road.drivingFlow.DrivingFlowResponseModel
 import com.example.rest.businessLayer.adapter.road.drivingFlow.DrivingFlowUpdateModel
 import com.example.rest.businessLayer.adapter.road.RoadModel
 import com.example.rest.businessLayer.adapter.road.RoadResponseModel
+import com.example.rest.businessLayer.adapter.road.TrafficDigitalTwinModel
+import com.example.rest.businessLayer.adapter.road.TrafficDigitalTwinRequestModel
 import com.example.rest.businessLayer.adapter.road.junction.JunctionModel
 import com.example.rest.businessLayer.adapter.road.junction.JunctionResponseModel
 import com.example.rest.businessLayer.adapter.road.junction.JunctionUpdateModel
+import com.example.rest.businessLayer.adapter.semaphore.NewSemaphoreRequestModel
+import com.example.rest.businessLayer.adapter.semaphore.SemaphoreResponseModel
+import com.example.rest.businessLayer.adapter.semaphore.SemaphoresRequestModel
 import com.example.rest.businessLayer.boundaries.RoadDataSourceGateway
 import com.example.rest.interfaceAdaptersLayer.infrastructure.dto.road.DrivingFlowResponseDto
 import com.example.rest.interfaceAdaptersLayer.infrastructure.dto.road.DrivingFlowUpdateDto
@@ -15,18 +21,36 @@ import com.example.rest.interfaceAdaptersLayer.infrastructure.dto.road.JunctionR
 import com.example.rest.interfaceAdaptersLayer.infrastructure.dto.road.JunctionResponseDto
 import com.example.rest.interfaceAdaptersLayer.infrastructure.dto.road.RoadRequestDto
 import com.example.rest.interfaceAdaptersLayer.infrastructure.dto.road.RoadResponseDto
+import com.example.rest.interfaceAdaptersLayer.infrastructure.dto.road.TrafficResponseDto
+import com.example.rest.interfaceAdaptersLayer.infrastructure.dto.road.toDto
+import com.example.rest.interfaceAdaptersLayer.infrastructure.dto.road.toModel
+import com.example.rest.interfaceAdaptersLayer.infrastructure.dto.semaphore.SemaphoreDto
+import com.example.rest.interfaceAdaptersLayer.infrastructure.dto.semaphore.toDto
+import com.example.rest.interfaceAdaptersLayer.infrastructure.dto.semaphore.toModel
 import java.lang.Integer.parseInt
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.MediaType
 import org.springframework.web.client.RestClient
 
-class RoadRemoteDataSource(url: String): RoadDataSourceGateway {
+class RoadRemoteDataSource(url: String, semaphoreDtUrl: String, trafficDtUrl: String): RoadDataSourceGateway {
 
 	private val restClient =
 		RestClient
 			.builder()
 			.baseUrl(url)
 			.build()
+
+    private val semaphoresDtClient =
+        RestClient
+            .builder()
+            .baseUrl(semaphoreDtUrl)
+            .build()
+
+    private val trafficDtClient =
+        RestClient
+            .builder()
+            .baseUrl(trafficDtUrl)
+            .build()
 
 	override fun addRoad(roadModel: RoadModel): Result<RoadResponseModel> =
 		try {
@@ -188,6 +212,91 @@ class RoadRemoteDataSource(url: String): RoadDataSourceGateway {
 		} catch (e: Exception) {
 			Result.failure(e)
 		}
+
+    override fun getSemaphores(semaphoresRequestModel: SemaphoresRequestModel): Result<List<SemaphoreResponseModel>> =
+        try {
+            val road = semaphoresRequestModel.road
+            val direction = semaphoresRequestModel.direction
+            val response =
+                semaphoresDtClient
+                    .get().uri {
+                        it.path("/semaphores/filter").queryParam("road", road).queryParam("direction", direction).build()
+                    }
+                    .accept(MediaType.APPLICATION_JSON)
+                    .retrieve()
+                    .toEntity(object : ParameterizedTypeReference<List<SemaphoreDto>>() {})
+                    .body ?: emptyList()
+            Result.success(response.map { it.toModel() })
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+
+    override fun getSemaphoreColor(idSemaphore: Int): Result<String> =
+        try {
+            val response =
+                semaphoresDtClient
+                    .get()
+                    .uri("/semaphores/color?idIndex={idSemaphore}", idSemaphore)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .retrieve()
+                    .toEntity(object : ParameterizedTypeReference<String>() {})
+                    .body!!
+            Result.success(response)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+
+    override fun createSemaphore(semaphoreRequestModel: NewSemaphoreRequestModel): Result<String> =
+        try {
+            val response =
+                semaphoresDtClient
+                    .post()
+                    .uri("/state/actions/createSemaphore")
+                    .body(semaphoreRequestModel.toDto())
+                    .accept(MediaType.APPLICATION_JSON)
+                    .retrieve()
+                    .toEntity(object : ParameterizedTypeReference<String>() {})
+                    .toString()
+            Result.success(response)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+
+    override fun createTrafficDt(newTrafficDigitalTwinRequest: NewTrafficDigitalTwinRequest): Result<String> =
+        try {
+            val response =
+                trafficDtClient
+                    .post()
+                    .uri("/state/actions/createTrafficDt")
+                    .body(newTrafficDigitalTwinRequest.toDto())
+                    .accept(MediaType.APPLICATION_JSON)
+                    .retrieve()
+                    .toEntity(object : ParameterizedTypeReference<String>() {})
+                    .toString()
+            Result.success(response)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+
+    override fun getTrafficDigitalTwins(trafficDigitalTwinRequestModel: TrafficDigitalTwinRequestModel): Result<TrafficDigitalTwinModel> =
+        try {
+            val roadId: String = trafficDigitalTwinRequestModel.roadId
+            val direction: Int = trafficDigitalTwinRequestModel.direction
+            println("REQUEST WITH $roadId and $direction")
+            val response =
+                trafficDtClient
+                    .get()
+                    // getByRoadId?roadId=roadId&direction=0
+                    .uri("/getByRoadId?roadId={roadId}&direction={direction}", roadId, direction)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .retrieve()
+                    .toEntity(object : ParameterizedTypeReference<TrafficResponseDto>() {})
+                    .body!!
+            Result.success(response.toModel())
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Result.failure(e)
+        }
 
 	private fun RoadResponseDto.toResponseModel(): RoadResponseModel =
 		RoadResponseModel(

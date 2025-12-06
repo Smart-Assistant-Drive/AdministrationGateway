@@ -1,12 +1,17 @@
 package com.example.rest.interfaceAdaptersLayer.controllers
 
+import com.example.rest.businessLayer.adapter.road.NewTrafficDigitalTwinRequest
+import com.example.rest.businessLayer.adapter.road.TrafficDigitalTwinRequestModel
 import com.example.rest.businessLayer.adapter.road.drivingFlow.DrivingFlowUpdateModel
+import com.example.rest.businessLayer.adapter.semaphore.NewSemaphoreRequestModel
+import com.example.rest.businessLayer.adapter.semaphore.SemaphoresRequestModel
 import com.example.rest.businessLayer.boundaries.RoadInputBoundary
 import com.example.rest.interfaceAdaptersLayer.controllers.dto.road.DrivingFlowRequestDto
 import com.example.rest.interfaceAdaptersLayer.controllers.dto.road.DrivingFlowResponseDto
 import com.example.rest.interfaceAdaptersLayer.controllers.dto.road.RoadRequestDto
 import com.example.rest.interfaceAdaptersLayer.controllers.dto.road.toDto
 import com.example.rest.interfaceAdaptersLayer.controllers.dto.road.toModel
+import com.example.rest.interfaceAdaptersLayer.infrastructure.dto.semaphore.SemaphoreDto
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.enums.ParameterIn
@@ -346,4 +351,313 @@ class RoadController(
 			}
 		}
 	}
+
+    @GetMapping("/semaphores/{road}/{dir}")
+    @Operation(
+        summary = "Get all semaphores within an existing road and direction",
+        description = "Get existing semaphores of a road with a specific id",
+        parameters = [
+            Parameter(
+                name = "road",
+                description = "Road id",
+                `in` = ParameterIn.PATH
+            ),
+            Parameter(
+                name = "dir",
+                description = "Road direction",
+                `in` = ParameterIn.PATH
+            )
+        ],
+        responses = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Semaphores obtained successfully",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        array = ArraySchema(items = Schema(implementation = SemaphoreDto::class))
+                    )
+                ]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Invalid road flow",
+                content = [Content()]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Valid semaphores not found",
+                content = [Content()]
+            ),
+            ApiResponse(
+                responseCode = "500",
+                description = "Internal server error for semaphores search",
+                content = [Content()]
+            )
+        ]
+    )
+    fun getSemaphores(@PathVariable road: String, @PathVariable dir: String): HttpEntity<Any> {
+        val result = roadInputBoundary.getSemaphores(SemaphoresRequestModel(road, dir))
+        return if (result.isSuccess) {
+            ResponseEntity(result.getOrNull()!!, HttpStatus.OK)
+        } else {
+            println(result.exceptionOrNull())
+            ResponseEntity.internalServerError().build()
+        }
+    }
+
+    @GetMapping("/traffic/{road}/{dir}")
+    @Operation(
+        summary = "Get all semaphores within an existing road and direction",
+        description = "Get existing semaphores of a road with a specific id",
+        parameters = [
+            Parameter(
+                name = "road",
+                description = "Road id",
+                `in` = ParameterIn.PATH
+            ),
+            Parameter(
+                name = "dir",
+                description = "Road direction",
+                `in` = ParameterIn.PATH
+            )
+        ],
+        responses = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Semaphores obtained successfully",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        array = ArraySchema(items = Schema(implementation = SemaphoreDto::class))
+                    )
+                ]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Invalid road flow",
+                content = [Content()]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Valid semaphores not found",
+                content = [Content()]
+            ),
+            ApiResponse(
+                responseCode = "500",
+                description = "Internal server error for semaphores search",
+                content = [Content()]
+            )
+        ]
+    )
+    fun getTrafficManager(@PathVariable road: String, @PathVariable dir: String): HttpEntity<Any> {
+        val result = roadInputBoundary.getTrafficDigitalTwin(TrafficDigitalTwinRequestModel(road, dir.toInt()))
+        return if (result.isSuccess) {
+            ResponseEntity(result.getOrNull()!!, HttpStatus.OK)
+        } else {
+            println(result.exceptionOrNull())
+            ResponseEntity.internalServerError().build()
+        }
+    }
+
+    @GetMapping("/semaphores/{id}")
+    @Operation(
+        summary = "Get existing semaphore color",
+        description = "Get existing semaphore color with a specific id",
+        parameters = [
+            Parameter(
+                name = "id",
+                description = "Semaphore id",
+                `in` = ParameterIn.PATH,
+            )
+        ],
+        responses = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Semaphore obtained successfully",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        array = ArraySchema(items = Schema(implementation = String::class))
+                    )
+                ]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Invalid id",
+                content = [Content()]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Valid semaphore not found",
+                content = [Content()]
+            ),
+            ApiResponse(
+                responseCode = "500",
+                description = "Internal server error for semaphores search",
+                content = [Content()]
+            )
+        ]
+    )
+    fun getSemaphoreColor(@PathVariable id: Int): HttpEntity<Any> {
+        val result = roadInputBoundary.getSemaphoreColor(id)
+        return if (result.isSuccess) {
+            ResponseEntity(result.getOrNull()!!, HttpStatus.OK)
+        } else {
+            ResponseEntity.internalServerError().build()
+        }
+    }
+
+    @GetMapping("/semaphores/url")
+    @Operation(
+        summary = "Get digital twin broker url",
+        description = "Get digital twin broker url",
+        responses = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Semaphore url obtained successfully",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        array = ArraySchema(items = Schema(implementation = String::class))
+                    )
+                ]
+            ),
+            ApiResponse(
+                responseCode = "500",
+                description = "Internal server error for semaphores search",
+                content = [Content()]
+            )
+        ]
+    )
+    fun getSemaphoresDigitalTwinUrl(): HttpEntity<Any> {
+        val result = roadInputBoundary.getSemaphoreTopicEvents()
+        return if (result.isSuccess) {
+            // TODO set broker url
+            ResponseEntity(result.getOrNull()!!, HttpStatus.OK)
+        } else {
+            ResponseEntity.internalServerError().build()
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+    @PostMapping("/semaphores")
+    @Operation(
+        summary = "Add new semaphore",
+        description = "Add new semaphore digital twin",
+        requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
+            content = [
+                Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = NewSemaphoreRequestModel::class)
+                )
+            ],
+            required = true
+        ),
+        responses = [
+            ApiResponse(
+                responseCode = "201",
+                description = "Semaphore created successfully",
+                content = [Content(mediaType = "application/json", schema = Schema(implementation = String::class))],
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Bad request",
+                content = [Content(mediaType = "application/json")],
+            ),
+            ApiResponse(
+                responseCode = "409",
+                description = "Conflict",
+                content = [Content(mediaType = "application/json")],
+            ),
+        ],
+    )
+    fun addSemaphore(
+        @RequestBody requestModel: NewSemaphoreRequestModel,
+    ): HttpEntity<String> {
+        val result = roadInputBoundary.addSemaphore(requestModel)
+        return if (result.isSuccess) {
+            // TODO add a DTO response to use links inside the response
+            val links =
+                listOf(
+                    WebMvcLinkBuilder.linkTo(
+                        WebMvcLinkBuilder.methodOn(RoadController::class.java).addSemaphore(requestModel)
+                    )
+                        .withSelfRel(),
+                )
+            ResponseEntity(result.getOrNull()!!, HttpStatus.CREATED)
+        } else {
+            when (val exception = result.exceptionOrNull()) {
+                else -> {
+                    println("ERROR: " + exception?.message)
+                    ResponseEntity.internalServerError().build()
+                }
+            }
+        }
+    }
+
+    @PostMapping("/traffic")
+    @Operation(
+        summary = "Add new traffic dt",
+        description = "Add new traffic digital twin",
+        requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
+            content = [
+                Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = NewTrafficDigitalTwinRequest::class)
+                )
+            ],
+            required = true
+        ),
+        responses = [
+            ApiResponse(
+                responseCode = "201",
+                description = "Traffic dt created successfully",
+                content = [Content(mediaType = "application/json", schema = Schema(implementation = String::class))],
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Bad request",
+                content = [Content(mediaType = "application/json")],
+            ),
+            ApiResponse(
+                responseCode = "409",
+                description = "Conflict",
+                content = [Content(mediaType = "application/json")],
+            ),
+        ],
+    )
+    fun addTrafficDt(
+        @RequestBody requestModel: NewTrafficDigitalTwinRequest,
+    ): HttpEntity<String> {
+        val result = roadInputBoundary.addTrafficDt(requestModel)
+        return if (result.isSuccess) {
+            // TODO add a DTO response to use links inside the response
+            val links =
+                listOf(
+                    WebMvcLinkBuilder.linkTo(
+                        WebMvcLinkBuilder.methodOn(RoadController::class.java).addTrafficDt(requestModel)
+                    )
+                        .withSelfRel(),
+                )
+            ResponseEntity(result.getOrNull()!!, HttpStatus.CREATED)
+        } else {
+            when (val exception = result.exceptionOrNull()) {
+                else -> {
+                    println("ERROR: " + exception?.message)
+                    ResponseEntity.internalServerError().build()
+                }
+            }
+        }
+    }
 }
