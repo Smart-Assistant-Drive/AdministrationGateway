@@ -18,7 +18,7 @@ import com.example.rest.businessLayer.adapter.semaphore.SemaphoresRequestModel
 interface RoadDataSourceGateway {
 	fun addRoad(roadModel: RoadModel): Result<RoadResponseModel>
 
-	fun getRoad(roadId: String): Result<RoadModel>
+	fun getRoad(roadId: String): Result<RoadResponseModel>
 
 	fun updateRoad(roadId: String, roadModel: RoadModel): Result<RoadResponseModel>
 
@@ -40,4 +40,6 @@ interface RoadDataSourceGateway {
     fun getSemaphoreColor(idSemaphore: Int): Result<String>
     fun createSemaphore(semaphoreRequestModel: NewSemaphoreRequestModel): Result<String>
     fun createTrafficDt(newTrafficDigitalTwinRequest: NewTrafficDigitalTwinRequest): Result<String>
+    fun getAllSemaphores(): Result<List<SemaphoreResponseModel>>
+    fun getRoads(): Result<List<RoadResponseModel>>
 }
