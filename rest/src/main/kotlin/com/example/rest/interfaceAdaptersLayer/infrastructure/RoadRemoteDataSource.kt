@@ -70,7 +70,7 @@ class RoadRemoteDataSource(url: String, semaphoreDtUrl: String, trafficDtUrl: St
 			Result.failure(e)
 		}
 
-	override fun getRoad(roadId: String): Result<RoadModel> =
+	override fun getRoad(roadId: String): Result<RoadResponseModel> =
 		try {
 			val response =
 				restClient
@@ -80,7 +80,7 @@ class RoadRemoteDataSource(url: String, semaphoreDtUrl: String, trafficDtUrl: St
 					.retrieve()
 					.toEntity(object : ParameterizedTypeReference<RoadResponseDto>() {})
 					.body!!
-			Result.success(response.toModel())
+			Result.success(response.toResponseModel())
 		} catch (e: Exception) {
 			Result.failure(e)
 		}
@@ -231,6 +231,36 @@ class RoadRemoteDataSource(url: String, semaphoreDtUrl: String, trafficDtUrl: St
             Result.failure(e)
         }
 
+    override fun getAllSemaphores(): Result<List<SemaphoreResponseModel>> =
+        try {
+            val response =
+                semaphoresDtClient
+                    .get()
+                    .uri("/semaphores")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .retrieve()
+                    .toEntity(object : ParameterizedTypeReference<List<SemaphoreDto>>() {})
+                    .body ?: emptyList()
+            Result.success(response.map { it.toModel() })
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+
+    override fun getRoads(): Result<List<RoadResponseModel>> =
+        try {
+            val response =
+                restClient
+                    .get()
+                    .uri("/roads")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .retrieve()
+                    .toEntity(object : ParameterizedTypeReference<List<RoadResponseDto>>() {})
+                    .body ?: emptyList()
+            Result.success(response.map { it.toResponseModel() })
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+
     override fun getSemaphoreColor(idSemaphore: Int): Result<String> =
         try {
             val response =
@@ -286,7 +316,6 @@ class RoadRemoteDataSource(url: String, semaphoreDtUrl: String, trafficDtUrl: St
             val response =
                 trafficDtClient
                     .get()
-                    // getByRoadId?roadId=roadId&direction=0
                     .uri("/getByRoadId?roadId={roadId}&direction={direction}", roadId, direction)
                     .accept(MediaType.APPLICATION_JSON)
                     .retrieve()

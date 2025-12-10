@@ -18,7 +18,7 @@ import com.example.rest.businessLayer.adapter.semaphore.SemaphoresRequestModel
 interface RoadInputBoundary {
 	fun addRoad(roadModel: RoadModel): Result<RoadResponseModel>
 
-	fun getRoad(roadId: String): Result<RoadModel>
+	fun getRoad(roadId: String): Result<RoadResponseModel>
 
 	fun updateRoad(roadId: String, roadModel: RoadModel): Result<RoadResponseModel>
 
@@ -46,4 +46,6 @@ interface RoadInputBoundary {
 
     fun addSemaphore(newSemaphoreRequestModel: NewSemaphoreRequestModel): Result<String>
     fun addTrafficDt(newTrafficDigitalTwinRequest: NewTrafficDigitalTwinRequest): Result<String>
+    fun getAllSemaphores(): Result<List<SemaphoreResponseModel>>
+    fun getRoads(): Result<List<RoadResponseModel>>
 }

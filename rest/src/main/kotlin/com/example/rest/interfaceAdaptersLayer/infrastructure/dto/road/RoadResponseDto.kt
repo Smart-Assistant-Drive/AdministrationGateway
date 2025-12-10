@@ -1,6 +1,5 @@
 package com.example.rest.interfaceAdaptersLayer.infrastructure.dto.road
 
-import com.example.rest.businessLayer.adapter.road.RoadModel
 import com.example.rest.businessLayer.adapter.road.RoadResponseModel
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
@@ -27,3 +26,11 @@ fun RoadResponseModel.toDto(links: List<Link>): RoadResponseDto =
 		this.roadName,
 		this.category.toString()
 	).add(links)
+
+fun RoadResponseDto.toResponseModel(): RoadResponseModel =
+    RoadResponseModel(
+        this.roadId,
+        this.roadNumber,
+        this.roadName,
+        this.category.toInt()
+    )

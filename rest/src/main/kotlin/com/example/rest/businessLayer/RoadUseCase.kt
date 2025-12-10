@@ -31,7 +31,7 @@ class RoadUseCase(
 		return roadDataSourceGateway.addRoad(roadModel)
 	}
 
-	override fun getRoad(roadId: String): Result<RoadModel> {
+	override fun getRoad(roadId: String): Result<RoadResponseModel> {
 		return roadDataSourceGateway.getRoad(roadId)
 	}
 
@@ -92,6 +92,14 @@ class RoadUseCase(
 
     override fun getTrafficDigitalTwin(trafficDigitalTwinRequestModel: TrafficDigitalTwinRequestModel): Result<TrafficDigitalTwinModel> {
         return roadDataSourceGateway.getTrafficDigitalTwins(trafficDigitalTwinRequestModel)
+    }
+
+    override fun getAllSemaphores(): Result<List<SemaphoreResponseModel>> {
+        return roadDataSourceGateway.getAllSemaphores()
+    }
+
+    override fun getRoads(): Result<List<RoadResponseModel>> {
+        return roadDataSourceGateway.getRoads()
     }
 
 }

@@ -1,6 +1,7 @@
 package com.example.rest.interfaceAdaptersLayer.controllers
 
 import com.example.rest.businessLayer.adapter.road.NewTrafficDigitalTwinRequest
+import com.example.rest.businessLayer.adapter.road.RoadResponseModel
 import com.example.rest.businessLayer.adapter.road.TrafficDigitalTwinRequestModel
 import com.example.rest.businessLayer.adapter.road.drivingFlow.DrivingFlowUpdateModel
 import com.example.rest.businessLayer.adapter.semaphore.NewSemaphoreRequestModel
@@ -9,6 +10,7 @@ import com.example.rest.businessLayer.boundaries.RoadInputBoundary
 import com.example.rest.interfaceAdaptersLayer.controllers.dto.road.DrivingFlowRequestDto
 import com.example.rest.interfaceAdaptersLayer.controllers.dto.road.DrivingFlowResponseDto
 import com.example.rest.interfaceAdaptersLayer.controllers.dto.road.RoadRequestDto
+import com.example.rest.interfaceAdaptersLayer.controllers.dto.road.StringResponseDto
 import com.example.rest.interfaceAdaptersLayer.controllers.dto.road.toDto
 import com.example.rest.interfaceAdaptersLayer.controllers.dto.road.toModel
 import com.example.rest.interfaceAdaptersLayer.infrastructure.dto.semaphore.SemaphoreDto
@@ -48,14 +50,14 @@ class RoadController(
 		responses = [
 			ApiResponse(
 				responseCode = "200",
-				description = "Signs types retrieved successfully",
+				description = "Road retrieved successfully",
 				content =
 				[
 					Content(
 						mediaType = "application/json",
 						array =
 						ArraySchema(
-							schema = Schema(implementation = String::class),
+							schema = Schema(implementation = RoadRequestDto::class),
 						),
 					),
 				],
@@ -70,11 +72,61 @@ class RoadController(
 	fun getRoad(@PathVariable id: String): HttpEntity<Any> {
 		val result = roadInputBoundary.getRoad(id)
 		return if (result.isSuccess) {
-			ResponseEntity(result.getOrNull()!!, HttpStatus.OK)
+            val links =
+                listOf(
+                    WebMvcLinkBuilder.linkTo(
+                        WebMvcLinkBuilder.methodOn(RoadController::class.java).getRoad(id)
+                    )
+                        .withSelfRel(),
+                )
+			ResponseEntity(result.getOrNull()!!.toDto(links), HttpStatus.OK)
 		} else {
 			ResponseEntity.internalServerError().build()
 		}
 	}
+
+    @GetMapping("/roads")
+    @Operation(
+        summary = "Get all existing roads",
+        description = "Get existing roads",
+        parameters = [],
+        responses = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Roads retrieved successfully",
+                content =
+                    [
+                        Content(
+                            mediaType = "application/json",
+                            array =
+                                ArraySchema(
+                                    schema = Schema(implementation = String::class),
+                                ),
+                        ),
+                    ],
+            ),
+            ApiResponse(
+                responseCode = "500",
+                description = "Internal server error",
+                content = [Content(mediaType = "application/json")],
+            ),
+        ],
+    )
+    fun getRoads(): HttpEntity<Any> {
+        val result: Result<List<RoadResponseModel>> = roadInputBoundary.getRoads()
+        return if (result.isSuccess) {
+            val links =
+                listOf(
+                    WebMvcLinkBuilder.linkTo(
+                        WebMvcLinkBuilder.methodOn(RoadController::class.java).getRoads()
+                    )
+                        .withSelfRel(),
+                )
+            ResponseEntity(result.getOrNull()!!.map { it.toDto(links) }.toList(), HttpStatus.OK)
+        } else {
+            ResponseEntity.internalServerError().build()
+        }
+    }
 
 	@PostMapping("/road")
 	@Operation(
@@ -406,6 +458,44 @@ class RoadController(
         }
     }
 
+    @GetMapping("/semaphores")
+    @Operation(
+        summary = "Get all semaphores",
+        description = "Get all existing semaphores",
+        parameters = [],
+        responses = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Semaphores obtained successfully",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        array = ArraySchema(items = Schema(implementation = SemaphoreDto::class))
+                    )
+                ]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Valid semaphores not found",
+                content = [Content()]
+            ),
+            ApiResponse(
+                responseCode = "500",
+                description = "Internal server error for semaphores search",
+                content = [Content()]
+            )
+        ]
+    )
+    fun getAllSemaphores(): HttpEntity<Any> {
+        val result = roadInputBoundary.getAllSemaphores()
+        return if (result.isSuccess) {
+            ResponseEntity(result.getOrNull()!!, HttpStatus.OK)
+        } else {
+            println(result.exceptionOrNull())
+            ResponseEntity.internalServerError().build()
+        }
+    }
+
     @GetMapping("/traffic/{road}/{dir}")
     @Operation(
         summary = "Get all semaphores within an existing road and direction",
@@ -540,17 +630,6 @@ class RoadController(
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
     @PostMapping("/semaphores")
     @Operation(
         summary = "Add new semaphore",
@@ -584,10 +663,9 @@ class RoadController(
     )
     fun addSemaphore(
         @RequestBody requestModel: NewSemaphoreRequestModel,
-    ): HttpEntity<String> {
+    ): HttpEntity<StringResponseDto> {
         val result = roadInputBoundary.addSemaphore(requestModel)
         return if (result.isSuccess) {
-            // TODO add a DTO response to use links inside the response
             val links =
                 listOf(
                     WebMvcLinkBuilder.linkTo(
@@ -595,7 +673,7 @@ class RoadController(
                     )
                         .withSelfRel(),
                 )
-            ResponseEntity(result.getOrNull()!!, HttpStatus.CREATED)
+            ResponseEntity(result.getOrNull()!!.toDto(links), HttpStatus.CREATED)
         } else {
             when (val exception = result.exceptionOrNull()) {
                 else -> {
@@ -639,10 +717,9 @@ class RoadController(
     )
     fun addTrafficDt(
         @RequestBody requestModel: NewTrafficDigitalTwinRequest,
-    ): HttpEntity<String> {
+    ): HttpEntity<StringResponseDto> {
         val result = roadInputBoundary.addTrafficDt(requestModel)
         return if (result.isSuccess) {
-            // TODO add a DTO response to use links inside the response
             val links =
                 listOf(
                     WebMvcLinkBuilder.linkTo(
@@ -650,7 +727,7 @@ class RoadController(
                     )
                         .withSelfRel(),
                 )
-            ResponseEntity(result.getOrNull()!!, HttpStatus.CREATED)
+            ResponseEntity(result.getOrNull()!!.toDto(links), HttpStatus.CREATED)
         } else {
             when (val exception = result.exceptionOrNull()) {
                 else -> {
