@@ -49,7 +49,7 @@ class TrafficSignRemoteDataSource(
             Result.failure(e)
         }
 
-    override fun getSigns(
+    override fun getSignsNear(
         idRoad: Int,
         direction: Int,
         latitude: Double,
@@ -65,6 +65,27 @@ class TrafficSignRemoteDataSource(
                         direction,
                         latitude,
                         longitude,
+                    ).accept(APPLICATION_JSON)
+                    .retrieve()
+                    .toEntity(object : ParameterizedTypeReference<List<SignResponseDto>>() {})
+                    .body ?: emptyList()
+            Result.success(response.map { it.toModel() })
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+
+    override fun getSigns(
+        idRoad: Int,
+        direction: Int,
+    ): Result<List<SignModel>> =
+        try {
+            val response =
+                restClient
+                    .get()
+                    .uri(
+                        "/signs/{idRoad}/{direction}",
+                        idRoad,
+                        direction,
                     ).accept(APPLICATION_JSON)
                     .retrieve()
                     .toEntity(object : ParameterizedTypeReference<List<SignResponseDto>>() {})

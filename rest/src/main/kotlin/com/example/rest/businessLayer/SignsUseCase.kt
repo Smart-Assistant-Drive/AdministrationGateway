@@ -11,10 +11,15 @@ class SignsUseCase(
 
     override fun createSign(requestModel: SignModel): Result<SignModel> = signsDataSourceGateway.createSign(requestModel)
 
-    override fun getSigns(
+    override fun getSignsNear(
         idRoad: Int,
         direction: Int,
         latitude: Double,
         longitude: Double,
-    ): Result<List<SignModel>> = signsDataSourceGateway.getSigns(idRoad, direction, latitude, longitude)
+    ): Result<List<SignModel>> = signsDataSourceGateway.getSignsNear(idRoad, direction, latitude, longitude)
+
+    override fun getSigns(
+        idRoad: Int,
+        direction: Int,
+    ): Result<List<SignModel>> = signsDataSourceGateway.getSigns(idRoad, direction)
 }
