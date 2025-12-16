@@ -13,7 +13,7 @@ import com.example.rest.interfaceAdaptersLayer.controllers.dto.road.RoadRequestD
 import com.example.rest.interfaceAdaptersLayer.controllers.dto.road.StringResponseDto
 import com.example.rest.interfaceAdaptersLayer.controllers.dto.road.toDto
 import com.example.rest.interfaceAdaptersLayer.controllers.dto.road.toModel
-import com.example.rest.interfaceAdaptersLayer.infrastructure.dto.semaphore.SemaphoreDto
+import com.example.rest.interfaceAdaptersLayer.controllers.dto.semaphore.SemaphoreDto
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.enums.ParameterIn
