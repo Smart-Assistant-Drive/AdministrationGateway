@@ -50,7 +50,7 @@ class TrafficSignRemoteDataSource(
         }
 
     override fun getSignsNear(
-        idRoad: Int,
+        idRoad: String,
         direction: Int,
         latitude: Double,
         longitude: Double,
@@ -75,7 +75,7 @@ class TrafficSignRemoteDataSource(
         }
 
     override fun getSigns(
-        idRoad: Int,
+        idRoad: String,
         direction: Int,
     ): Result<List<SignModel>> =
         try {
