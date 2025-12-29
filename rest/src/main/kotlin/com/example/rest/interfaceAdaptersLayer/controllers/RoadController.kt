@@ -9,6 +9,8 @@ import com.example.rest.businessLayer.adapter.semaphore.SemaphoresRequestModel
 import com.example.rest.businessLayer.boundaries.RoadInputBoundary
 import com.example.rest.interfaceAdaptersLayer.controllers.dto.road.DrivingFlowRequestDto
 import com.example.rest.interfaceAdaptersLayer.controllers.dto.road.DrivingFlowResponseDto
+import com.example.rest.interfaceAdaptersLayer.controllers.dto.road.JunctionRequestDto
+import com.example.rest.interfaceAdaptersLayer.controllers.dto.road.JunctionResponseDto
 import com.example.rest.interfaceAdaptersLayer.controllers.dto.road.RoadRequestDto
 import com.example.rest.interfaceAdaptersLayer.controllers.dto.road.StringResponseDto
 import com.example.rest.interfaceAdaptersLayer.controllers.dto.road.toDto
@@ -292,7 +294,10 @@ class RoadController(
 			ResponseEntity(result.getOrNull()!!.toDto(links), HttpStatus.CREATED)
 		} else {
 			when (val exception = result.exceptionOrNull()) {
-				else -> ResponseEntity.internalServerError().build()
+				else -> {
+                    println("ERROR:${exception} ")
+                    ResponseEntity.internalServerError().build()
+                }
 			}
 		}
 	}
@@ -345,7 +350,105 @@ class RoadController(
 		}
 	}
 
-	@PutMapping("/flows")
+    @GetMapping("/junction/road/{id}")
+    @Operation(
+        summary = "Get all junctions within an existing road",
+        description = "Get existing junctions of a road with a specific id",
+        parameters = [
+            Parameter(
+                name = "id",
+                description = "Road id",
+                `in` = ParameterIn.PATH
+            )
+        ],
+        responses = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Junctions obtained successfully",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        array = ArraySchema(items = Schema(implementation = JunctionResponseDto::class))
+                    )
+                ]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Invalid road junction",
+                content = [Content()]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Valid road junction not found",
+                content = [Content()]
+            ),
+            ApiResponse(
+                responseCode = "500",
+                description = "Internal server error for road junction search",
+                content = [Content()]
+            )
+        ]
+    )
+    fun getJunctionsByRoad(@PathVariable id: String): HttpEntity<Any> {
+        val result = roadInputBoundary.getJunctionsByRoad(id)
+        return ResponseEntity(result, HttpStatus.OK)
+    }
+
+    @PostMapping("/junction")
+    @Operation(
+        summary = "Add new junction",
+        description = "Add new junction",
+        requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
+            content = [
+                Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = JunctionRequestDto::class)
+                )
+            ],
+            required = true
+        ),
+        responses = [
+            ApiResponse(
+                responseCode = "201",
+                description = "Junction created successfully",
+                content = [Content(mediaType = "application/json", schema = Schema(implementation = JunctionResponseDto::class))],
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Bad request",
+                content = [Content(mediaType = "application/json")],
+            ),
+            ApiResponse(
+                responseCode = "409",
+                description = "Conflict",
+                content = [Content(mediaType = "application/json")],
+            ),
+        ],
+    )
+    fun addJunction(
+        @RequestBody requestModel: JunctionRequestDto,
+    ): HttpEntity<Any> {
+        val result = roadInputBoundary.addJunction(requestModel.toModel())
+        return if (result.isSuccess) {
+            val links =
+                listOf(
+                    WebMvcLinkBuilder.linkTo(
+                        WebMvcLinkBuilder.methodOn(RoadController::class.java).addJunction(requestModel)
+                    )
+                        .withSelfRel(),
+                )
+            ResponseEntity(result.getOrNull()!!.toDto(links), HttpStatus.CREATED)
+        } else {
+            when (val exception = result.exceptionOrNull()) {
+                else -> {
+                    println("ERROR:${exception} ")
+                    ResponseEntity.internalServerError().build()
+                }
+            }
+        }
+    }
+
+    @PutMapping("/flows")
 	@Operation(
 		summary = "Change existing driving flow",
 		description = "Change existing driving flow with a specific id",

@@ -56,7 +56,10 @@ class RoadUseCase(
 	}
 
 	override fun getJunctionsByRoad(roadId: String): List<JunctionResponseModel> {
-		return roadDataSourceGateway.getJunctionsByRoad(roadId).getOrElse { ArrayList() }
+		return roadDataSourceGateway.getJunctionsByRoad(roadId).getOrElse {
+            println("ERROR: " + it.message)
+            ArrayList()
+        }
 	}
 
 	override fun getJunction(id: String): Result<JunctionResponseModel> {
