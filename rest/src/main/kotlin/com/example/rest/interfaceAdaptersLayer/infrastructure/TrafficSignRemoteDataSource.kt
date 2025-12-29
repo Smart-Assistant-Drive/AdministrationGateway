@@ -3,6 +3,7 @@ package com.example.rest.interfaceAdaptersLayer.infrastructure
 import com.example.rest.businessLayer.adapter.sign.SignModel
 import com.example.rest.businessLayer.boundaries.SignsDataSourceGateway
 import com.example.rest.interfaceAdaptersLayer.infrastructure.dto.createSign.SignResponseDto
+import com.example.rest.interfaceAdaptersLayer.infrastructure.dto.createSign.SignsResponseDto
 import com.example.rest.interfaceAdaptersLayer.infrastructure.dto.createSign.toDto
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.MediaType.APPLICATION_JSON
@@ -67,8 +68,9 @@ class TrafficSignRemoteDataSource(
                         longitude,
                     ).accept(APPLICATION_JSON)
                     .retrieve()
-                    .toEntity(object : ParameterizedTypeReference<List<SignResponseDto>>() {})
-                    .body ?: emptyList()
+                    .toEntity(object : ParameterizedTypeReference<SignsResponseDto>() {})
+                    .body
+                    ?.signs ?: emptyList()
             Result.success(response.map { it.toModel() })
         } catch (e: Exception) {
             Result.failure(e)
@@ -88,8 +90,9 @@ class TrafficSignRemoteDataSource(
                         direction,
                     ).accept(APPLICATION_JSON)
                     .retrieve()
-                    .toEntity(object : ParameterizedTypeReference<List<SignResponseDto>>() {})
-                    .body ?: emptyList()
+                    .toEntity(object : ParameterizedTypeReference<SignsResponseDto>() {})
+                    .body
+                    ?.signs ?: emptyList()
             Result.success(response.map { it.toModel() })
         } catch (e: Exception) {
             Result.failure(e)
