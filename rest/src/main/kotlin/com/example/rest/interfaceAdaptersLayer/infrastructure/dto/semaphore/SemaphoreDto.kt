@@ -11,6 +11,7 @@ import org.springframework.hateoas.RepresentationModel
 data class SemaphoreDto
 	@JsonCreator
 	constructor(
+        @param:JsonProperty("id") val id: String,
         @param:JsonProperty("link") val link: String,
         @param:JsonProperty("status") val status: String,
         @param:JsonProperty("road") val road: String,
@@ -29,7 +30,8 @@ fun SemaphoreDto.toModel(): SemaphoreResponseModel =
 
 fun NewSemaphoreRequestModel.toDto(): SemaphoreDto =
     SemaphoreDto(
-        link,
+        id,
+        "",
         "na",
         road,
         direction,
