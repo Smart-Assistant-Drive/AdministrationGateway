@@ -32,7 +32,7 @@ import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.MediaType
 import org.springframework.web.client.RestClient
 
-class RoadRemoteDataSource(url: String, semaphoreDtUrl: String, trafficDtUrl: String): RoadDataSourceGateway {
+class RoadRemoteDataSource(url: String, semaphoreDtUrl: String, semaphoreDtAdminUrl: String, trafficDtUrl: String): RoadDataSourceGateway {
 
 	private val restClient =
 		RestClient
@@ -44,6 +44,12 @@ class RoadRemoteDataSource(url: String, semaphoreDtUrl: String, trafficDtUrl: St
         RestClient
             .builder()
             .baseUrl(semaphoreDtUrl)
+            .build()
+
+    private val semaphoresAdminDtClient =
+        RestClient
+            .builder()
+            .baseUrl(semaphoreDtAdminUrl)
             .build()
 
     private val trafficDtClient =
@@ -279,7 +285,7 @@ class RoadRemoteDataSource(url: String, semaphoreDtUrl: String, trafficDtUrl: St
     override fun createSemaphore(semaphoreRequestModel: NewSemaphoreRequestModel): Result<String> =
         try {
             val response =
-                semaphoresDtClient
+                semaphoresAdminDtClient
                     .post()
                     .uri("/state/actions/createSemaphore")
                     .body(semaphoreRequestModel.toDto())

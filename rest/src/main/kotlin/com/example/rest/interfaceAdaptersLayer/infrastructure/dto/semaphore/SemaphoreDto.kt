@@ -3,6 +3,7 @@ package com.example.rest.interfaceAdaptersLayer.infrastructure.dto.semaphore
 import com.example.rest.businessLayer.adapter.semaphore.NewSemaphoreRequestModel
 import com.example.rest.businessLayer.adapter.semaphore.Position
 import com.example.rest.businessLayer.adapter.semaphore.SemaphoreResponseModel
+import com.example.rest.domainLayer.Coordinate
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.micrometer.core.instrument.binder.http.HttpJakartaServletRequestTags.status
@@ -16,7 +17,8 @@ data class SemaphoreDto
         @param:JsonProperty("status") val status: String,
         @param:JsonProperty("road") val road: String,
         @param:JsonProperty("direction") val direction: Int,
-        @param:JsonProperty("position") val position: Position,
+        @param:JsonProperty("position") val position: Coordinate,
+        @param:JsonProperty("idIndex") val idIndex: Int
 	) : RepresentationModel<SemaphoreDto>()
 
 fun SemaphoreDto.toModel(): SemaphoreResponseModel =
@@ -25,7 +27,9 @@ fun SemaphoreDto.toModel(): SemaphoreResponseModel =
 		status,
 		road,
 		direction,
-		Pair(position.x, position.y)
+        Coordinate(position.x, position.y),
+        id,
+        idIndex
 	)
 
 fun NewSemaphoreRequestModel.toDto(): SemaphoreDto =
@@ -35,5 +39,6 @@ fun NewSemaphoreRequestModel.toDto(): SemaphoreDto =
         "na",
         road,
         direction,
-        position
+        Coordinate(position.x, position.y),
+        0
     )

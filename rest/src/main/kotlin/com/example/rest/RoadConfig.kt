@@ -13,8 +13,9 @@ class RoadConfig {
 	fun roadInputBoundary(environment: Environment): RoadInputBoundary {
 		val remote = environment.getProperty("road.service.host") ?: "http://localhost:8070"
         val remoteTrafficDt = environment.getProperty("road.service.trafficdt.host") ?: "http://localhost:8091"
-        val remoteSemaphoreDt = environment.getProperty("road.service.semaphoredt.host") ?: "http://localhost:8090"
-		val signsDataSourceGateway = RoadRemoteDataSource(remote, remoteSemaphoreDt, remoteTrafficDt)
+        val remoteSemaphoreDt = environment.getProperty("road.service.semaphoredt.host") ?: "http://localhost:8071"
+        val remoteSemaphoreDtAdmin = environment.getProperty("road.service.semaphoredt.adminhost") ?: "http://localhost:8091"
+		val signsDataSourceGateway = RoadRemoteDataSource(remote, remoteSemaphoreDt, remoteSemaphoreDtAdmin, remoteTrafficDt)
 		return RoadUseCase(signsDataSourceGateway)
 	}
 }
