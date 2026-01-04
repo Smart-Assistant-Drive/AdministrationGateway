@@ -1,6 +1,6 @@
 package com.example.rest.interfaceAdaptersLayer.infrastructure.dto.road
 
-import com.example.rest.businessLayer.adapter.road.NewTrafficDigitalTwinRequest
+import com.example.rest.businessLayer.adapter.road.NewTrafficDigitalTwinRequestBody
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.springframework.hateoas.RepresentationModel
@@ -20,8 +20,8 @@ data class NewTrafficDtRequestDto
         val numBlocks: Int
     ) : RepresentationModel<NewTrafficDtRequestDto>()
 
-fun NewTrafficDtRequestDto.toModel(): NewTrafficDigitalTwinRequest {
-    return NewTrafficDigitalTwinRequest(
+fun NewTrafficDtRequestDto.toModel(): NewTrafficDigitalTwinRequestBody {
+    return NewTrafficDigitalTwinRequestBody(
         this.roadId,
         this.direction,
         this.link,
@@ -30,7 +30,7 @@ fun NewTrafficDtRequestDto.toModel(): NewTrafficDigitalTwinRequest {
     )
 }
 
-fun NewTrafficDigitalTwinRequest.toDto(): NewTrafficDtRequestDto {
+fun NewTrafficDigitalTwinRequestBody.toDto(): NewTrafficDtRequestDto {
     return NewTrafficDtRequestDto(
         this.roadId,
         this.direction,

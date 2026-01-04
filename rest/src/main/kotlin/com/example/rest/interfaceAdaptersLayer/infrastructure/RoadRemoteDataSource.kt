@@ -1,6 +1,6 @@
 package com.example.rest.interfaceAdaptersLayer.infrastructure
 
-import com.example.rest.businessLayer.adapter.road.NewTrafficDigitalTwinRequest
+import com.example.rest.businessLayer.adapter.road.NewTrafficDigitalTwinRequestBody
 import com.example.rest.businessLayer.adapter.road.drivingFlow.DrivingFlowModel
 import com.example.rest.businessLayer.adapter.road.drivingFlow.DrivingFlowResponseModel
 import com.example.rest.businessLayer.adapter.road.drivingFlow.DrivingFlowUpdateModel
@@ -304,7 +304,7 @@ class RoadRemoteDataSource(url: String, semaphoreDtUrl: String, semaphoreDtAdmin
             Result.failure(e)
         }
 
-    override fun createTrafficDt(newTrafficDigitalTwinRequest: NewTrafficDigitalTwinRequest): Result<String> =
+    override fun createTrafficDt(newTrafficDigitalTwinRequest: NewTrafficDigitalTwinRequestBody): Result<String> =
         try {
             val response =
                 trafficAdminDtClient

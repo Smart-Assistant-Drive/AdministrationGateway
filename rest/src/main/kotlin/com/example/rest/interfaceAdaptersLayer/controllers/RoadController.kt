@@ -1,6 +1,7 @@
 package com.example.rest.interfaceAdaptersLayer.controllers
 
 import com.example.rest.businessLayer.adapter.road.NewTrafficDigitalTwinRequest
+import com.example.rest.businessLayer.adapter.road.NewTrafficDigitalTwinRequestBody
 import com.example.rest.businessLayer.adapter.road.RoadResponseModel
 import com.example.rest.businessLayer.adapter.road.TrafficDigitalTwinRequestModel
 import com.example.rest.businessLayer.adapter.road.drivingFlow.DrivingFlowUpdateModel
@@ -795,7 +796,7 @@ class RoadController(
             content = [
                 Content(
                     mediaType = "application/json",
-                    schema = Schema(implementation = NewTrafficDigitalTwinRequest::class)
+                    schema = Schema(implementation = NewTrafficDigitalTwinRequestBody::class)
                 )
             ],
             required = true
@@ -821,6 +822,7 @@ class RoadController(
     fun addTrafficDt(
         @RequestBody requestModel: NewTrafficDigitalTwinRequest,
     ): HttpEntity<StringResponseDto> {
+
         val result = roadInputBoundary.addTrafficDt(requestModel)
         return if (result.isSuccess) {
             val links =

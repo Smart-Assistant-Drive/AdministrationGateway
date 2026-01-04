@@ -1,6 +1,6 @@
 package com.example.rest.businessLayer.boundaries
 
-import com.example.rest.businessLayer.adapter.road.NewTrafficDigitalTwinRequest
+import com.example.rest.businessLayer.adapter.road.NewTrafficDigitalTwinRequestBody
 import com.example.rest.businessLayer.adapter.road.drivingFlow.DrivingFlowModel
 import com.example.rest.businessLayer.adapter.road.drivingFlow.DrivingFlowResponseModel
 import com.example.rest.businessLayer.adapter.road.drivingFlow.DrivingFlowUpdateModel
@@ -39,7 +39,7 @@ interface RoadDataSourceGateway {
     fun getSemaphores(semaphoresRequestModel: SemaphoresRequestModel): Result<List<SemaphoreResponseModel>>
     fun getSemaphoreColor(idSemaphore: Int): Result<String>
     fun createSemaphore(semaphoreRequestModel: NewSemaphoreRequestModel): Result<String>
-    fun createTrafficDt(newTrafficDigitalTwinRequest: NewTrafficDigitalTwinRequest): Result<String>
+    fun createTrafficDt(newTrafficDigitalTwinRequest: NewTrafficDigitalTwinRequestBody): Result<String>
     fun getAllSemaphores(): Result<List<SemaphoreResponseModel>>
     fun getRoads(): Result<List<RoadResponseModel>>
 }

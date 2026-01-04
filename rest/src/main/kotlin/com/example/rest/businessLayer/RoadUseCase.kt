@@ -1,6 +1,7 @@
 package com.example.rest.businessLayer
 
 import com.example.rest.businessLayer.adapter.road.NewTrafficDigitalTwinRequest
+import com.example.rest.businessLayer.adapter.road.NewTrafficDigitalTwinRequestBody
 import com.example.rest.businessLayer.adapter.road.drivingFlow.DrivingFlowModel
 import com.example.rest.businessLayer.adapter.road.drivingFlow.DrivingFlowResponseModel
 import com.example.rest.businessLayer.adapter.road.drivingFlow.DrivingFlowUpdateModel
@@ -11,6 +12,7 @@ import com.example.rest.businessLayer.adapter.road.TrafficDigitalTwinRequestMode
 import com.example.rest.businessLayer.adapter.road.junction.JunctionModel
 import com.example.rest.businessLayer.adapter.road.junction.JunctionResponseModel
 import com.example.rest.businessLayer.adapter.road.junction.JunctionUpdateModel
+import com.example.rest.businessLayer.adapter.road.toRequestBody
 import com.example.rest.businessLayer.adapter.semaphore.NewSemaphoreRequestModel
 import com.example.rest.businessLayer.adapter.semaphore.SemaphoreResponseModel
 import com.example.rest.businessLayer.adapter.semaphore.SemaphoresRequestModel
@@ -86,7 +88,7 @@ class RoadUseCase(
     }
 
     override fun addTrafficDt(newTrafficDigitalTwinRequest: NewTrafficDigitalTwinRequest): Result<String> {
-        return roadDataSourceGateway.createTrafficDt(newTrafficDigitalTwinRequest)
+        return roadDataSourceGateway.createTrafficDt(newTrafficDigitalTwinRequest.toRequestBody(""))
     }
 
     override fun getSemaphoreTopicEvents(): Result<String> {
