@@ -15,7 +15,8 @@ class RoadConfig {
         val remoteTrafficDt = environment.getProperty("road.service.trafficdt.host") ?: "http://localhost:8091"
         val remoteSemaphoreDt = environment.getProperty("road.service.semaphoredt.host") ?: "http://localhost:8071"
         val remoteSemaphoreDtAdmin = environment.getProperty("road.service.semaphoredt.adminhost") ?: "http://localhost:8091"
-		val signsDataSourceGateway = RoadRemoteDataSource(remote, remoteSemaphoreDt, remoteSemaphoreDtAdmin, remoteTrafficDt)
+        val remoteTrafficDtAdmin = environment.getProperty("road.service.trafficdt.adminhost") ?: "http://localhost:8091"
+		val signsDataSourceGateway = RoadRemoteDataSource(remote, remoteSemaphoreDt, remoteSemaphoreDtAdmin, remoteTrafficDt, remoteTrafficDtAdmin)
 		return RoadUseCase(signsDataSourceGateway)
 	}
 }

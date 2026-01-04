@@ -1,7 +1,6 @@
 package com.example.rest.interfaceAdaptersLayer.infrastructure.dto.road
 
 import com.example.rest.businessLayer.adapter.road.NewTrafficDigitalTwinRequest
-import com.example.rest.businessLayer.adapter.road.TrafficDigitalTwinModel
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.springframework.hateoas.RepresentationModel

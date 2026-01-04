@@ -32,7 +32,7 @@ import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.MediaType
 import org.springframework.web.client.RestClient
 
-class RoadRemoteDataSource(url: String, semaphoreDtUrl: String, semaphoreDtAdminUrl: String, trafficDtUrl: String): RoadDataSourceGateway {
+class RoadRemoteDataSource(url: String, semaphoreDtUrl: String, semaphoreDtAdminUrl: String, trafficDtUrl: String, trafficDtAdminUrl: String): RoadDataSourceGateway {
 
 	private val restClient =
 		RestClient
@@ -56,6 +56,12 @@ class RoadRemoteDataSource(url: String, semaphoreDtUrl: String, semaphoreDtAdmin
         RestClient
             .builder()
             .baseUrl(trafficDtUrl)
+            .build()
+
+    private val trafficAdminDtClient =
+        RestClient
+            .builder()
+            .baseUrl(trafficDtAdminUrl)
             .build()
 
 	override fun addRoad(roadModel: RoadModel): Result<RoadResponseModel> =
@@ -301,7 +307,7 @@ class RoadRemoteDataSource(url: String, semaphoreDtUrl: String, semaphoreDtAdmin
     override fun createTrafficDt(newTrafficDigitalTwinRequest: NewTrafficDigitalTwinRequest): Result<String> =
         try {
             val response =
-                trafficDtClient
+                trafficAdminDtClient
                     .post()
                     .uri("/state/actions/createTrafficDt")
                     .body(newTrafficDigitalTwinRequest.toDto())
