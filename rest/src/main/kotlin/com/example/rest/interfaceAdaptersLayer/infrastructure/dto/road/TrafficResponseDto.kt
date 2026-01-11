@@ -15,14 +15,21 @@ data class TrafficResponseDto
 		@param:JsonProperty("link")
 		val link: String,
 		@param:JsonProperty("numLanes")
-		val numLanes: Int
-	) : RepresentationModel<TrafficResponseDto>()
+		val numLanes: Int,
+        @param:JsonProperty("numBlocks")
+        val numBlocks: Int,
+        @param:JsonProperty("idDt")
+        val idDt: String
+
+) : RepresentationModel<TrafficResponseDto>()
 
 fun TrafficResponseDto.toModel(): TrafficDigitalTwinModel {
 	return TrafficDigitalTwinModel(
 		this.roadId,
 		this.direction,
 		this.link,
-		this.numLanes
+		this.numLanes,
+        this.numBlocks,
+        this.idDt
 	)
 }
